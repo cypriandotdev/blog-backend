@@ -1,0 +1,23 @@
+{%extends 'base.html'%}
+{%load static%}
+{%block content%}
+<div class="px-4 pt-5 my-5 text-center h-100">
+    <h5 class="fw-bold">cyprian.dev blog backend</h5>
+    <div class="col-lg-6 mx-auto">
+      {%if not user.is_authenticated%}
+      <p class="mb-4 small">ready to write?</p>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+        <a type="button" class="btn btn-primary btn px-4 btn-sm" href="{%url 'login'%}">login</a>
+      </div>
+      {%else%}
+      <p class="mb-4 small">done writing for the day?</p>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+        <a type="button" class="btn btn-primary btn px-4 btn-sm" href="{%url 'logout'%}">logout</a>
+      </div>
+      {%endif%}
+    </div>
+      <div class="container px-5" >
+        <img src="{% static 'images/write.svg' %}" class="img-fluid mb-4" style="max-height:250px; width:auto" alt="write" loading="lazy">
+      </div>
+  </div>
+{%endblock content%}

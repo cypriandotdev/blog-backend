@@ -1,0 +1,158 @@
+{%extends 'base.html'%}
+{%load static%}
+{%block styles%}
+<style>
+.form-control{
+border-radius:3px!important
+}
+
+
+</style>
+
+{%endblock styles%}
+{%block content%}
+<div class="container mt-3">
+    <div class="row w-50 mx-auto py-4">
+        <button class="btn btn-primary btn-sm pe-3 ps-3 mx-auto" style="width:220px" data-bs-toggle="modal"
+                data-bs-target="#add-series-category"><i class="fas fa-plus"></i> add
+            series or category
+        </button>
+    </div>
+    <div class="w-75 row mx-auto mt-3">
+        <form method="post" id="articleform">
+            {%csrf_token%}
+            <div class="mb-3">
+                <input type="text" class="form-control" id="title" name="title" placeholder="title">
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" id="tags" name="tags" placeholder="tags">
+            </div>
+            <div class="mb-3">
+                <select class="form-select" id="series_select" style="color:grey!important" name="series">
+                    <option selected value="" style="color:black!important">series</option>
+                    {%for val in series%}
+                        <option value="{{val.name}}" style="color:black!important">{{val.name}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+            <div class=" mb-3">
+                <select class="form-select" id="category_select" style="color:grey!important" name="category">
+                    <option selected value="" class="text-muted">category</option>
+                    {%for category in categories%}
+                        <option value="{{category.name}}" style="color:black!important">{{category.name}}</option>
+                    {%endfor%}
+                </select>
+            </div>
+
+            <div class="pb-3">
+                <textarea name="content" rows="15" id="content"></textarea>
+            </div>
+            <div class="pb-5">
+                <button class="btn btn-primary w-100" type="submit">Create</button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+<!-- Add Series and Category Modal -->
+<div class="modal fade" id="add-series-category" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <select class="form-select" id="series_or_category_select" style="color:grey!important"
+                            name="series">
+                        <option selected value="" style="color:black!important">choose one</option>
+                        <option value="series" style="color:black!important">series</option>
+                        <option value="category" style="color:black!important">category</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="name" name="name"
+                           placeholder="name of series or category">
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-primary w-100 btn-sm" onclick="submitCategoryOrSeries()">Add
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock content%}
+{%block scripts%}
+<script>
+$(function() {
+    $('select').each(function() {
+        $.data(this, 'default', this.value);
+    }).css("color","gray")
+    .focus(function() {
+        if (!$.data(this, 'edited')) {
+            this.value = "";
+            $(this).css("color","#111");
+        }
+    }).change(function() {
+        $.data(this, 'edited', this.value != "");
+    }).blur(function() {
+        if (!$.data(this, 'edited')) {
+            this.value = $.data(this, 'default');
+            $(this).css("color","gray");
+        }
+    });
+
+});
+$( "#articleform" ).submit(function( event ) {
+  event.preventDefault();
+  var title = $('#title').val();
+  var tags = $('#tags').val();
+  var series = $('#series').find(':selected').val();
+  var category = $('#category').find(':selected').val();
+  var content = tinyMCE.activeEditor.getContent();
+  if (title=='' || tags=='' || series=='' || category=='' || content==''){
+    $("#articleform").prepend('<div class="mb-3" id="error"><p class="small text-danger text-center">fill in all fields</p></div>');
+    console.log(content);
+    setTimeout(function () {
+      $("#error").remove();
+    }, 5000);
+  }
+  else{
+    $( "#articleform" )[0].submit();
+  }
+});
+function submitCategoryOrSeries(){
+    var cat_or_series = $("#series_or_category_select").find(":selected").val()
+    var name = $("#name").val()
+
+    if (cat_or_series=='series'){
+        var series = $("#series_or_category_select").find(":selected").val()
+        var category = null
+    }
+    else if (cat_or_series=='category'){
+        var category = $("#series_or_category_select").find(":selected").val()
+        var series = null
+    }
+
+    $.ajax({
+        url: "ajax/add_series_or_category",
+        method: 'post',
+        data: {
+            category: category,
+            series: series,
+            name: name,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        }
+    }).done(function() {
+        window.location.reload();
+    });
+}
+
+
+</script>
+{%endblock scripts%}

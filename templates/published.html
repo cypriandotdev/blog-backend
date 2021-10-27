@@ -1,0 +1,13 @@
+{%extends 'base.html'%}
+{%load static%}
+{%block content%}
+<div class="container">
+    {%for article in published%}
+        <a href="{%url 'published_article' article.slug%}"><p>{{article.title}}</p></a>
+    {%endfor%}
+</div>
+{%endblock content%}
+{%block scripts%}
+<script>
+</script>
+{%endblock scripts%}

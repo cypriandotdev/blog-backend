@@ -1,0 +1,50 @@
+{%extends 'base.html'%}
+{%load static%}
+{%block styles%}
+<style>
+    input{
+        border-top:none!important;
+        border-right:none!important;
+        border-left:none!important;
+        border-radius:0!important;
+        }
+</style>
+{%endblock styles%}
+{%block content%}
+<div class="container col-xl-10 col-xxl-8 px-4 py-3">
+
+    <div class="row align-items-center g-lg-5 py-5 d-flex align-items-center justify-content-center"
+         style="height:80vh">
+        <div class="p-2 bd-highlight col-lg-7 text-center text-lg-start">
+            <img src="{% static 'images/login.svg' %}" class="img-fluid mb-4" style="max-height:250px; width:auto"
+                 alt="write" loading="lazy">
+        </div>
+        <div class="p-2 bd-highlight col-md-10 mx-auto col-lg-5">
+            <form class="p-4 p-md-5" method="post">
+                {%csrf_token%}
+                {%if error%}
+                <p id="error" class="small text-danger">{{error}}</p>
+                {%endif%}
+                <div class="form-floating form-sm mb-3">
+
+                    <input type="password" class="form-control form-control-sm" id="floatingPassword"
+                           placeholder="password" name="password" >
+                    <label for="floatingPassword">password</label>
+                </div>
+
+                <button class="w-100 btn btn-sm btn-primary" type="submit">login</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+{%endblock content%}
+{%block scripts%}
+<script>
+setTimeout(function () {
+  $("#error").remove();
+}, 3000);
+</script>
+{%endblock scripts%}
+

@@ -1,0 +1,48 @@
+{%extends 'base.html'%}
+{%load static%}
+{%load humanize%}
+{%block content%}
+<div class="container d-flex justify-content-between py-3 pt-5">
+    <button class="btn btn-sm btn-outline-success border-0" style="width:100px" onclick="publishArticle()"><i class="fas fa-check"></i> publish</button>
+    <button class="btn btn-sm btn-outline-primary border-0" style="width:100px"><i class="fas fa-pencil-alt"></i> edit</button>
+    <button class="btn btn-sm btn-outline-danger border-0" style="width:100px" onclick="deleteArticle()"><i class="fas fa-trash"></i> delete</button>
+</div>
+<div class="container">
+<h5>{{article.title}}</h5>
+<h6 class="text-muted">{{article.category}}</h6>
+{%if article.series%}
+<h6 class="text-muted">{{article.series}}</h6>
+{%endif%}
+<h6 class="text-muted">{{article.created_at|naturaltime}}</h6>
+<br>
+{{article.content|safe}}
+</div>
+{%endblock content%}
+{%block scripts%}
+<script>
+  function deleteArticle(){
+     $.ajax({
+        url: "/ajax/delete",
+        method: 'post',
+        data: {
+            delete: "{{article.slug}}",
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        }
+    }).done(function() {
+        window.location.href = '/pending';
+    });
+    }
+     function publishArticle(){
+     $.ajax({
+        url: "/ajax/publish",
+        method: 'post',
+        data: {
+            publish: "{{article.slug}}",
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        }
+    }).done(function() {
+        window.location.href = '/published/{{article.slug}}';
+    });
+    }
+</script>
+{%endblock scripts%}
